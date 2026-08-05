@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}About Project | Low-Dose PET Image Enhancement System{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+    <div class="container">
+        <div class="page-kicker"><i class="fa-solid fa-stethoscope"></i> Clinical Context</div>
+        <h1>About The Project</h1>
+        <p>Understanding PET Imaging, Low-Dose Challenges, and the Power of Deep Learning AI in Healthcare.</p>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row g-4">
+        <!-- PET Imaging Section -->
+        <div class="col-lg-6">
+            <div class="card-custom h-100">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="card-icon-wrapper m-0">
+                        <i class="fa-solid fa-atom"></i>
+                    </div>
+                    <h3 class="fw-bold m-0 text-primary-dark">What is PET Imaging?</h3>
+                </div>
+                <p class="text-secondary">
+                    <strong>Positron Emission Tomography (PET)</strong> is a non-invasive nuclear medicine functional imaging technique that visualizes cellular metabolic processes in the human body.
+                </p>
+                <p class="text-secondary small">
+                    Radiotracers (such as Fluorodeoxyglucose - <sup>18</sup>F-FDG) are injected into the patient. As the radiotracer decays, it emits positrons that annihilate with electrons, emitting pairs of 511 keV gamma photons detected by the PET scanner ring to construct 3D metabolic maps.
+                </p>
+                <ul class="list-unstyled text-muted small d-flex flex-column gap-2 mt-3">
+                    <li><i class="fa-solid fa-check text-teal me-2"></i><strong>Oncology:</strong> Detecting tumor metastases and tracking chemotherapy response.</li>
+                    <li><i class="fa-solid fa-check text-teal me-2"></i><strong>Neurology:</strong> Early diagnosis of Alzheimer's disease and epileptic foci.</li>
+                    <li><i class="fa-solid fa-check text-teal me-2"></i><strong>Cardiology:</strong> Assessing myocardial viability post-infarction.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Low-Dose vs High-Dose Section -->
+        <div class="col-lg-6">
+            <div class="card-custom h-100">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="card-icon-wrapper m-0">
+                        <i class="fa-solid fa-scale-balanced"></i>
+                    </div>
+                    <h3 class="fw-bold m-0 text-primary-dark">Low-Dose vs. High-Dose PET</h3>
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-6">
+                        <div class="p-3 rounded bg-light border border-warning">
+                            <h6 class="fw-bold text-warning-dark mb-1"><i class="fa-solid fa-triangle-exclamation me-1"></i> Low-Dose PET</h6>
+                            <p class="small text-muted m-0">Reduced radiotracer injection (1/4 to 1/10th dose). Low radiation risk, but high Poisson noise and poor signal-to-noise ratio (SNR).</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 rounded bg-light border border-success">
+                            <h6 class="fw-bold text-success mb-1"><i class="fa-solid fa-shield-cat me-1"></i> High-Dose PET</h6>
+                            <p class="small text-muted m-0">Standard radiotracer dose. Crisp metabolic detail, clear lesion boundaries, but higher cumulative radiation dose to patient organs.</p>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-secondary small">
+                    Scanning patients at full dose poses long-term stochastic radiation risk (ALARA principle: <em>As Low As Reasonably Achievable</em>). Low-Dose scanning is safer, but raw low-dose images are severely degraded by noise, making clinical diagnosis difficult.
+                </p>
+            </div>
+        </div>
+
+        <!-- Why Enhancement Needed -->
+        <div class="col-lg-6">
+            <div class="card-custom h-100">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="card-icon-wrapper m-0">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </div>
+                    <h3 class="fw-bold m-0 text-primary-dark">Why Image Enhancement is Needed</h3>
+                </div>
+                <p class="text-secondary small">
+                    Image enhancement bridges the gap between patient safety and diagnostic accuracy. Conventional filtering methods (Gaussian smoothing, BM3D) cause spatial blur and lose sharp lesion boundaries.
+                </p>
+                <div class="p-3 bg-light rounded border">
+                    <h6 class="fw-bold text-primary-dark mb-2">Key Clinical Objectives:</h6>
+                    <ul class="m-0 text-muted small ps-3">
+                        <li>Denoise Poisson-dominated photon counting noise without blurring anatomical edges.</li>
+                        <li>Restore Standardized Uptake Value (SUV) quantitative fidelity.</li>
+                        <li>Enable ultra-low dose PET imaging protocols in pediatric care.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advantages of AI -->
+        <div class="col-lg-6">
+            <div class="card-custom h-100">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="card-icon-wrapper m-0">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <h3 class="fw-bold m-0 text-primary-dark">Advantages of AI in Medical Imaging</h3>
+                </div>
+                <p class="text-secondary small">
+                    Deep Learning architectures like <strong>U-Net</strong> learn complex non-linear spatial mapping directly from paired Low-Dose and High-Dose PET datasets.
+                </p>
+                <ul class="list-unstyled text-muted small d-flex flex-column gap-2">
+                    <li class="d-flex gap-2">
+                        <i class="fa-solid fa-bolt text-teal mt-1"></i>
+                        <div><strong>Sub-Second Inference:</strong> Processes 2D DICOM slices in milliseconds compared to computationally expensive iterative reconstruction methods.</div>
+                    </li>
+                    <li class="d-flex gap-2">
+                        <i class="fa-solid fa-bullseye text-teal mt-1"></i>
+                        <div><strong>Feature-Aware Denoising:</strong> Skip connections preserve fine structural background while suppressing noise.</div>
+                    </li>
+                    <li class="d-flex gap-2">
+                        <i class="fa-solid fa-arrows-rotate text-teal mt-1"></i>
+                        <div><strong>End-to-End Consistency:</strong> Direct image-to-image translation optimized on L1 structural loss.</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

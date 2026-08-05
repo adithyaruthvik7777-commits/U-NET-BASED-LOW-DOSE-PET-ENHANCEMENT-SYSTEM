@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+
+# Env / secrets
+.env
+.env.*
+*.pem
+credentials.json
+kaggle.json
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Runtime / uploads
+uploads/
+instance/
+*.log
+
+# Local dataset pointer / caches (dataset lives in kagglehub cache)
+data/dataset_root.txt
+.cache/
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# Local fine-tune backups (keep only best_unet_pet.pth in repo)
+models/best_unet_pet_before_finetune.pth
+models/best_unet_pet_stage1.pth
+

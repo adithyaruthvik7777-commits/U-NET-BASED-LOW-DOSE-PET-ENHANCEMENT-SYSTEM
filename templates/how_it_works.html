@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}How It Works | Low-Dose PET Image Enhancement System{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+    <div class="container">
+        <div class="page-kicker"><i class="fa-solid fa-route"></i> End-to-End Pipeline</div>
+        <h1>How It Works</h1>
+        <p>Complete processing pipeline from Low-Dose upload to PyTorch U-Net inference and High-Dose export.</p>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <!-- VISUAL PIPELINE FLOWCHART -->
+    <div class="card-custom mb-5">
+        <h3 class="fw-bold text-center text-primary-dark mb-4">System Workflow Pipeline</h3>
+        
+        <div class="row align-items-center justify-content-center g-3 text-center">
+            <!-- Step 1 -->
+            <div class="col-md-3 col-6">
+                <div class="p-3 bg-light rounded-4 border">
+                    <div class="badge bg-primary mb-2">Step 1</div>
+                    <i class="fa-solid fa-file-medical text-primary fs-2 d-block mb-2"></i>
+                    <h6 class="fw-bold m-0">Low-Dose PET Image</h6>
+                    <small class="text-muted">DICOM / PNG / NPY</small>
+                </div>
+            </div>
+            
+            <div class="col-auto d-none d-md-block text-slate-400 fs-4"><i class="fa-solid fa-arrow-right"></i></div>
+
+            <!-- Step 2 -->
+            <div class="col-md-3 col-6">
+                <div class="p-3 bg-light rounded-4 border">
+                    <div class="badge bg-primary mb-2">Step 2</div>
+                    <i class="fa-solid fa-cloud-arrow-up text-teal fs-2 d-block mb-2"></i>
+                    <h6 class="fw-bold m-0">Upload</h6>
+                    <small class="text-muted">Drag & Drop Dropzone</small>
+                </div>
+            </div>
+
+            <div class="col-auto d-none d-md-block text-slate-400 fs-4"><i class="fa-solid fa-arrow-right"></i></div>
+
+            <!-- Step 3 -->
+            <div class="col-md-3 col-6">
+                <div class="p-3 bg-light rounded-4 border">
+                    <div class="badge bg-primary mb-2">Step 3</div>
+                    <i class="fa-solid fa-gears text-warning fs-2 d-block mb-2"></i>
+                    <h6 class="fw-bold m-0">Preprocessing</h6>
+                    <small class="text-muted">Min-Max Normalization & Tensor Resize</small>
+                </div>
+            </div>
+
+            <div class="w-100 d-none d-md-block my-2"></div>
+
+            <!-- Step 4 -->
+            <div class="col-md-3 col-6">
+                <div class="p-3 bg-light rounded-4 border border-teal shadow-sm">
+                    <div class="badge bg-teal mb-2">Step 4</div>
+                    <i class="fa-solid fa-brain text-teal fs-2 d-block mb-2"></i>
+                    <h6 class="fw-bold m-0 text-teal">Trained U-Net Model</h6>
+                    <small class="text-muted">PyTorch Deep Learning</small>
+                </div>
+            </div>
+
+            <div class="col-auto d-none d-md-block text-slate-400 fs-4"><i class="fa-solid fa-arrow-right"></i></div>
+
+            <!-- Step 5 -->
+            <div class="col-md-3 col-6">
+                <div class="p-3 bg-light rounded-4 border">
+                    <div class="badge bg-primary mb-2">Step 5</div>
+                    <i class="fa-solid fa-sliders text-info fs-2 d-block mb-2"></i>
+                    <h6 class="fw-bold m-0">Postprocessing</h6>
+                    <small class="text-muted">Intensity Clip & Heatmap Colormap</small>
+                </div>
+            </div>
+
+            <div class="col-auto d-none d-md-block text-slate-400 fs-4"><i class="fa-solid fa-arrow-right"></i></div>
+
+            <!-- Step 6 -->
+            <div class="col-md-3 col-6">
+                <div class="p-3 bg-light rounded-4 border border-success shadow-sm">
+                    <div class="badge bg-success mb-2">Step 6 & 7</div>
+                    <i class="fa-solid fa-circle-check text-success fs-2 d-block mb-2"></i>
+                    <h6 class="fw-bold m-0 text-success">Enhanced Result</h6>
+                    <small class="text-muted">Side-by-Side Display & Download</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DETAILED STEP DESCRIPTION -->
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card-custom">
+                <h5 class="fw-bold text-primary-dark mb-3"><i class="fa-solid fa-sliders text-teal me-2"></i> Data Preprocessing Stage</h5>
+                <p class="text-muted small">
+                    When a medical image file (DICOM `.dcm`, `.ima`, or `.png`) is uploaded, the Flask backend converts raw pixel intensity matrices into standardized floating-point arrays.
+                </p>
+                <div class="bg-dark text-slate-200 p-3 rounded font-monospace small mb-2">
+                    img = img - img.min()<br>
+                    img = img / (img.max() + 1e-8) # Scale to [0, 1]
+                </div>
+                <small class="text-muted d-block">Resized to 256x256 tensor representation with dimensions (1, 1, 256, 256) matching U-Net input expectations.</small>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card-custom">
+                <h5 class="fw-bold text-primary-dark mb-3"><i class="fa-solid fa-microchip text-teal me-2"></i> PyTorch Model Execution</h5>
+                <p class="text-muted small">
+                    The preprocessed tensor passes through the forward pass of the U-Net neural network loaded on CPU/GPU:
+                </p>
+                <div class="bg-dark text-slate-200 p-3 rounded font-monospace small mb-2">
+                    with torch.no_grad():<br>
+                    &nbsp;&nbsp;enhanced_tensor = model(input_tensor)
+                </div>
+                <small class="text-muted d-block">Skip connections preserve structural anatomy while the bottleneck filters out low-dose noise components.</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

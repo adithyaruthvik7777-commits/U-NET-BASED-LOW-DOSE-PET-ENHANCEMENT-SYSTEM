@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Model Information | PyTorch U-Net Architecture{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+    <div class="container">
+        <div class="page-kicker"><i class="fa-solid fa-network-wired"></i> Deep Learning Model</div>
+        <h1>Trained U-Net Model Information</h1>
+        <p>Detailed breakdown of the U-Net architecture trained in Kaggle using PyTorch.</p>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row g-4">
+        <!-- ARCHITECTURE SUMMARY -->
+        <div class="col-lg-8">
+            <div class="card-custom">
+                <h3 class="fw-bold text-primary-dark mb-3"><i class="fa-solid fa-network-wired text-teal me-2"></i> U-Net Architecture Overview</h3>
+                <p class="text-secondary">
+                    The <strong>U-Net</strong> architecture (Ronneberger et al.) is a convolutional neural network designed specifically for biomedical image-to-image translation tasks. Its symmetric "U" shape consists of a contracting encoder path, a bottleneck bridge, and an expanding decoder path.
+                </p>
+
+                <div class="row g-3 my-4">
+                    <div class="col-md-4">
+                        <div class="p-3 bg-light border-start border-4 border-primary rounded">
+                            <h6 class="fw-bold text-primary mb-1">1. Encoder Path</h6>
+                            <p class="small text-muted m-0">Downsamples spatial resolution while extracting high-level semantic features using Conv2D (3x3), ReLU, and MaxPool (2x2).</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 bg-light border-start border-4 border-warning rounded">
+                            <h6 class="fw-bold text-warning mb-1">2. Bottleneck Bridge</h6>
+                            <p class="small text-muted m-0">Processes 512 deep feature channels, capturing global contextual representations across the PET slice.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 bg-light border-start border-4 border-success rounded">
+                            <h6 class="fw-bold text-success mb-1">3. Decoder Path</h6>
+                            <p class="small text-muted m-0">Upsamples feature maps back to 256x256 using ConvTranspose2d, concatenating high-resolution skip connections.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h5 class="fw-bold text-primary-dark mb-2">Role of Skip Connections</h5>
+                <p class="text-secondary small">
+                    Skip connections copy feature maps directly from the encoder layers to the corresponding decoder layers (via <code class="bg-light text-primary px-2 py-1 rounded">torch.cat([u, c], dim=1)</code>). This ensures fine anatomical structures (such as organ boundaries and lesion edges) are preserved despite downsampling.
+                </p>
+            </div>
+        </div>
+
+        <!-- SPECIFICATIONS CARD -->
+        <div class="col-lg-4">
+            <div class="card-custom bg-light border">
+                <h4 class="fw-bold text-primary-dark mb-3"><i class="fa-solid fa-sliders text-teal me-2"></i> Model Specifications</h4>
+                <ul class="list-group list-group-flush bg-transparent small">
+                    <li class="list-group-item bg-transparent d-flex justify-content-between">
+                        <span class="text-muted">Total Parameters:</span>
+                        <strong class="text-primary-dark">7,759,521</strong>
+                    </li>
+                    <li class="list-group-item bg-transparent d-flex justify-content-between">
+                        <span class="text-muted">Trainable Parameters:</span>
+                        <strong class="text-primary-dark">7,759,521</strong>
+                    </li>
+                    <li class="list-group-item bg-transparent d-flex justify-content-between">
+                        <span class="text-muted">Input Channel:</span>
+                        <strong class="text-primary-dark">1 (Grayscale PET)</strong>
+                    </li>
+                    <li class="list-group-item bg-transparent d-flex justify-content-between">
+                        <span class="text-muted">Output Channel:</span>
+                        <strong class="text-primary-dark">1 (Enhanced PET)</strong>
+                    </li>
+                    <li class="list-group-item bg-transparent d-flex justify-content-between">
+                        <span class="text-muted">Loss Function:</span>
+                        <strong class="text-primary-dark">L1 Loss (Mean Absolute)</strong>
+                    </li>
+                    <li class="list-group-item bg-transparent d-flex justify-content-between">
+                        <span class="text-muted">Optimizer:</span>
+                        <strong class="text-primary-dark">Adam (LR = 1e-4)</strong>
+                    </li>
+                    <li class="list-group-item bg-transparent d-flex justify-content-between">
+                        <span class="text-muted">Scheduler:</span>
+                        <strong class="text-primary-dark">CosineAnnealingLR</strong>
+                    </li>
+                    <li class="list-group-item bg-transparent d-flex justify-content-between">
+                        <span class="text-muted">Training Platform:</span>
+                        <strong class="text-primary-dark">Kaggle GPU (PyTorch)</strong>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- WHY U-NET SUITABLE FOR MEDICAL IMAGING -->
+    <div class="card-custom mt-4">
+        <h4 class="fw-bold text-primary-dark mb-3"><i class="fa-solid fa-circle-question text-teal me-2"></i> Why U-Net is Optimal for PET Enhancement</h4>
+        <div class="row g-4 text-secondary small">
+            <div class="col-md-6">
+                <div class="p-3 bg-light rounded border h-100">
+                    <h6 class="fw-bold text-dark mb-2"><i class="fa-solid fa-database text-teal me-2"></i> Small Dataset Efficiency</h6>
+                    <p class="m-0">U-Net achieves superior generalizability even when trained on modest medical dataset sizes by exploiting localized spatial patch context.</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="p-3 bg-light rounded border h-100">
+                    <h6 class="fw-bold text-dark mb-2"><i class="fa-solid fa-compress text-teal me-2"></i> Precise Spatial Localization</h6>
+                    <p class="m-0">Combines high-level context ('what') with precise spatial localization ('where'), essential for accurate metabolic lesion boundaries in nuclear medicine.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

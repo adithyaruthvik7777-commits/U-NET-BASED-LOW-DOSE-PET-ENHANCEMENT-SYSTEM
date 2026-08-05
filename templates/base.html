@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Low-Dose PET Image Enhancement System | Medical AI{% endblock %}</title>
+    <meta name="description" content="Web-Based Low-Dose PET Image Enhancement System using PyTorch U-Net Deep Learning Architecture.">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Display + body fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom Healthcare UI CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=2">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container-fluid max-width-container">
+            <a class="navbar-brand navbar-brand-custom" href="{{ url_for('index') }}">
+                <div class="brand-icon"><i class="fa-solid fa-atom"></i></div>
+                <div>
+                    <span class="d-block lh-1 fw-bold text-primary-dark">PET-Enhance AI</span>
+                    <small class="text-muted fs-7 font-sans fw-normal">Low-Dose U-Net System</small>
+                </div>
+            </a>
+            
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center gap-1">
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom {% if active_page == 'home' %}active{% endif %}" href="{{ url_for('index') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom {% if active_page == 'about' %}active{% endif %}" href="{{ url_for('about') }}">About Project</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom {% if active_page == 'how_it_works' %}active{% endif %}" href="{{ url_for('how_it_works') }}">How It Works</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom {% if active_page == 'model_info' %}active{% endif %}" href="{{ url_for('model_info') }}">Model Info</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom {% if active_page == 'methodology' %}active{% endif %}" href="{{ url_for('methodology') }}">Methodology</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom {% if active_page == 'tech_stack' %}active{% endif %}" href="{{ url_for('tech_stack') }}">Tech Stack</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom {% if active_page == 'architecture' %}active{% endif %}" href="{{ url_for('architecture') }}">Architecture</a>
+                    </li>
+                    <li class="nav-item ms-lg-2">
+                        <a class="btn btn-nav-enhance" href="{{ url_for('enhance') }}">
+                            <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Enhance PET Image
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-grow-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-5 col-md-6">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div class="brand-icon"><i class="fa-solid fa-atom"></i></div>
+                        <h5 class="m-0 text-white">PET-Enhance AI</h5>
+                    </div>
+                    <p class="text-slate-400 small mb-3">
+                        Development of a Web-Based Low-Dose PET Image Enhancement System using U-Net. 
+                        Reducing radiopharmaceutical radiation exposure while maintaining clinical diagnostic quality.
+                    </p>
+                    <div class="d-flex gap-3 text-slate-400 fs-5">
+                        <a href="#"><i class="fa-brands fa-github"></i></a>
+                        <a href="#"><i class="fa-solid fa-file-medical"></i></a>
+                        <a href="#"><i class="fa-solid fa-laptop-code"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h5>Quick Navigation</h5>
+                    <ul class="list-unstyled small d-flex flex-column gap-2 mt-3">
+                        <li><a href="{{ url_for('index') }}"><i class="fa-solid fa-chevron-right text-teal me-1 fs-7"></i> Home Page</a></li>
+                        <li><a href="{{ url_for('enhance') }}"><i class="fa-solid fa-chevron-right text-teal me-1 fs-7"></i> Image Enhancement Workspace</a></li>
+                        <li><a href="{{ url_for('model_info') }}"><i class="fa-solid fa-chevron-right text-teal me-1 fs-7"></i> PyTorch U-Net Architecture</a></li>
+                        <li><a href="{{ url_for('methodology') }}"><i class="fa-solid fa-chevron-right text-teal me-1 fs-7"></i> Waterfall Model Methodology</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-4 col-md-12">
+                    <h5>Academic Capstone Details</h5>
+                    <div class="card bg-dark border-secondary p-3 mt-3 text-slate-300 small">
+                        <div class="mb-2"><strong>Project Title:</strong> Development of Low-Dose PET Image Enhancement System using U-Net</div>
+                        <div class="mb-2"><strong>Student Name:</strong> S. Karthik / Capstone Project Team</div>
+                        <div><strong>Guide Name:</strong> Medical AI Research Advisor</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom text-center">
+                <p class="m-0 text-slate-400 small">
+                    &copy; 2026 Web-Based Low-Dose PET Image Enhancement System. All Rights Reserved. Powered by PyTorch & Flask.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/bootstrap.bundle.min.js"></script>
+    <!-- Main JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,596 @@
+{% extends "base.html" %}
+
+{% block title %}Software Methodology | Waterfall Model{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Methodology page — visual timeline (site palette) */
+.method-hero {
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(ellipse 80% 60% at 10% 20%, rgba(0, 168, 150, 0.28), transparent 55%),
+        radial-gradient(ellipse 70% 50% at 90% 80%, rgba(26, 95, 160, 0.45), transparent 50%),
+        linear-gradient(145deg, #06101E 0%, #0A3663 55%, #0D4A6E 100%);
+    color: #fff;
+    padding: 3.5rem 0 3rem;
+    margin-bottom: 0;
+}
+.method-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: linear-gradient(180deg, rgba(0,0,0,0.55), transparent 90%);
+    pointer-events: none;
+}
+.method-hero .container { position: relative; z-index: 1; }
+.method-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #7EE8D8;
+    background: rgba(0, 168, 150, 0.18);
+    border: 1px solid rgba(0, 168, 150, 0.35);
+    border-radius: 999px;
+    padding: 0.35rem 0.85rem;
+    margin-bottom: 1rem;
+}
+.method-hero h1 {
+    font-weight: 800;
+    font-size: clamp(1.85rem, 3.5vw, 2.6rem);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.65rem;
+}
+.method-hero p {
+    color: #B8C9DC;
+    font-size: 1.1rem;
+    max-width: 38rem;
+    margin: 0;
+}
+.method-hero-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.75rem;
+}
+.method-stat {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    padding: 0.75rem 1.1rem;
+    min-width: 7.5rem;
+}
+.method-stat strong {
+    display: block;
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.1;
+}
+.method-stat span {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #94A3B8;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.method-flow-wrap {
+    margin-top: -1.5rem;
+    position: relative;
+    z-index: 2;
+    margin-bottom: 2.5rem;
+}
+.method-flow {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    box-shadow: 0 16px 40px rgba(10, 54, 99, 0.1);
+    padding: 1.5rem 1.25rem 1.35rem;
+}
+.method-flow h2 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--primary-blue);
+    margin-bottom: 1.25rem;
+    text-align: center;
+}
+.method-pipeline {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 0.35rem;
+    overflow-x: auto;
+    padding-bottom: 0.35rem;
+}
+.method-pipe-step {
+    flex: 1 1 0;
+    min-width: 88px;
+    text-align: center;
+    position: relative;
+    padding: 0 0.15rem;
+    animation: methodFadeUp 0.55s ease both;
+}
+.method-pipe-step:nth-child(1) { animation-delay: 0.05s; }
+.method-pipe-step:nth-child(2) { animation-delay: 0.1s; }
+.method-pipe-step:nth-child(3) { animation-delay: 0.15s; }
+.method-pipe-step:nth-child(4) { animation-delay: 0.2s; }
+.method-pipe-step:nth-child(5) { animation-delay: 0.25s; }
+.method-pipe-step:nth-child(6) { animation-delay: 0.3s; }
+.method-pipe-step:nth-child(7) { animation-delay: 0.35s; }
+.method-pipe-step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 22px;
+    left: calc(50% + 22px);
+    width: calc(100% - 44px);
+    height: 2px;
+    background: linear-gradient(90deg, #CBD5E1, #94A3B8);
+    z-index: 0;
+}
+.method-pipe-node {
+    width: 44px;
+    height: 44px;
+    margin: 0 auto 0.55rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 800;
+    font-size: 0.95rem;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 6px 16px rgba(10, 54, 99, 0.22);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.method-pipe-step:hover .method-pipe-node {
+    transform: scale(1.08);
+    box-shadow: 0 10px 22px rgba(0, 168, 150, 0.35);
+}
+.method-pipe-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    line-height: 1.25;
+}
+.n-req { background: linear-gradient(135deg, #0A3663, #1A5FA0); }
+.n-plan { background: linear-gradient(135deg, #134074, #028090); }
+.n-design { background: linear-gradient(135deg, #0D4A6E, #00A896); }
+.n-impl { background: linear-gradient(135deg, #00A896, #02C39A); }
+.n-test { background: linear-gradient(135deg, #D97706, #F59E0B); }
+.n-deploy { background: linear-gradient(135deg, #059669, #10B981); }
+.n-maint { background: linear-gradient(135deg, #1E293B, #334155); }
+
+.method-timeline {
+    position: relative;
+    padding-left: 0;
+}
+@media (min-width: 768px) {
+    .method-timeline::before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: linear-gradient(180deg, #0A3663, #00A896, #10B981, #1E293B);
+        transform: translateX(-50%);
+        border-radius: 4px;
+        opacity: 0.35;
+    }
+}
+.method-phase {
+    position: relative;
+    margin-bottom: 1.5rem;
+    animation: methodFadeUp 0.6s ease both;
+}
+.method-phase-card {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.35rem 1.4rem;
+    box-shadow: 0 8px 24px rgba(10, 54, 99, 0.06);
+    height: 100%;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    border-top: 3px solid var(--phase-accent, var(--primary-blue));
+    overflow: hidden;
+}
+.method-phase-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 36px rgba(10, 54, 99, 0.12);
+}
+.method-phase-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    margin-bottom: 0.85rem;
+}
+.method-phase-icon {
+    flex-shrink: 0;
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.15rem;
+    background: var(--phase-accent, var(--primary-blue));
+    box-shadow: 0 6px 14px color-mix(in srgb, var(--phase-accent, #0A3663) 40%, transparent);
+}
+.method-phase-badge {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--phase-accent, var(--primary-blue));
+    background: color-mix(in srgb, var(--phase-accent, #0A3663) 12%, white);
+    border-radius: 6px;
+    padding: 0.2rem 0.5rem;
+    margin-bottom: 0.25rem;
+}
+.method-phase-card h3 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--primary-dark);
+    margin: 0;
+}
+.method-phase-card .obj {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 0.9rem;
+}
+.method-meta {
+    display: grid;
+    gap: 0.55rem;
+}
+.method-meta-row {
+    background: #F8FAFC;
+    border: 1px solid #E8EEF5;
+    border-radius: 10px;
+    padding: 0.65rem 0.8rem;
+    font-size: 0.82rem;
+    color: #475569;
+}
+.method-meta-row strong {
+    display: block;
+    color: var(--primary-blue);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.15rem;
+}
+
+.method-why {
+    background:
+        linear-gradient(135deg, rgba(10, 54, 99, 0.04), rgba(0, 168, 150, 0.08)),
+        #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    padding: 2rem 1.75rem;
+    box-shadow: 0 10px 30px rgba(10, 54, 99, 0.06);
+    margin-bottom: 3rem;
+}
+.method-why h2 {
+    font-weight: 800;
+    color: var(--primary-dark);
+    font-size: 1.35rem;
+    margin-bottom: 0.5rem;
+}
+.method-why > p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    max-width: 42rem;
+    margin-bottom: 1.5rem;
+}
+.why-card {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 1.15rem 1.2rem;
+    height: 100%;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+.why-card:hover {
+    border-color: rgba(0, 168, 150, 0.45);
+    transform: translateY(-2px);
+}
+.why-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--primary-blue), var(--accent-teal));
+    color: #fff;
+    font-weight: 800;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.65rem;
+}
+.why-card h3 {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--primary-dark);
+    margin-bottom: 0.4rem;
+}
+.why-card p {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+@keyframes methodFadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 767.98px) {
+    .method-pipe-step:not(:last-child)::after { display: none; }
+    .method-pipeline { gap: 0.65rem; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="method-hero">
+    <div class="container py-2">
+        <div class="method-kicker">
+            <i class="fa-solid fa-diagram-project"></i> Capstone SDLC
+        </div>
+        <h1>Software Development Methodology</h1>
+        <p>Sequential Waterfall Model for medical AI development — clear phase gates from requirements through maintenance.</p>
+        <div class="method-hero-stats">
+            <div class="method-stat"><strong>7</strong><span>Phases</span></div>
+            <div class="method-stat"><strong>Waterfall</strong><span>Model</span></div>
+            <div class="method-stat"><strong>U-Net</strong><span>Core Deliverable</span></div>
+        </div>
+    </div>
+</section>
+
+<div class="container method-flow-wrap">
+    <div class="method-flow">
+        <h2><i class="fa-solid fa-route text-teal me-2"></i>Waterfall Phases Flow</h2>
+        <div class="method-pipeline">
+            <div class="method-pipe-step">
+                <div class="method-pipe-node n-req">1</div>
+                <div class="method-pipe-label">Requirements</div>
+            </div>
+            <div class="method-pipe-step">
+                <div class="method-pipe-node n-plan">2</div>
+                <div class="method-pipe-label">Planning</div>
+            </div>
+            <div class="method-pipe-step">
+                <div class="method-pipe-node n-design">3</div>
+                <div class="method-pipe-label">Design</div>
+            </div>
+            <div class="method-pipe-step">
+                <div class="method-pipe-node n-impl">4</div>
+                <div class="method-pipe-label">Implement</div>
+            </div>
+            <div class="method-pipe-step">
+                <div class="method-pipe-node n-test">5</div>
+                <div class="method-pipe-label">Testing</div>
+            </div>
+            <div class="method-pipe-step">
+                <div class="method-pipe-node n-deploy">6</div>
+                <div class="method-pipe-label">Deployment</div>
+            </div>
+            <div class="method-pipe-step">
+                <div class="method-pipe-node n-maint">7</div>
+                <div class="method-pipe-label">Maintenance</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-4">
+    <div class="row g-4 method-timeline">
+        <div class="col-md-6 method-phase" style="animation-delay:0.05s">
+            <div class="method-phase-card" style="--phase-accent:#0A3663">
+                <div class="method-phase-head">
+                    <div class="method-phase-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+                    <div>
+                        <span class="method-phase-badge">Phase 1</span>
+                        <h3>Requirements Analysis</h3>
+                    </div>
+                </div>
+                <p class="obj"><strong>Objective:</strong> Identify nuclear medicine needs for low-dose PET scan enhancement and define functional software specs.</p>
+                <div class="method-meta">
+                    <div class="method-meta-row">
+                        <strong>Activities</strong>
+                        Clinical literature review, paired DICOM dataset acquisition, defining metrics (PSNR, SSIM).
+                    </div>
+                    <div class="method-meta-row">
+                        <strong>Deliverables</strong>
+                        System Requirement Specification (SRS) document, dataset protocol agreement.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 method-phase" style="animation-delay:0.1s">
+            <div class="method-phase-card" style="--phase-accent:#028090">
+                <div class="method-phase-head">
+                    <div class="method-phase-icon"><i class="fa-solid fa-map"></i></div>
+                    <div>
+                        <span class="method-phase-badge">Phase 2</span>
+                        <h3>System Planning</h3>
+                    </div>
+                </div>
+                <p class="obj"><strong>Objective:</strong> Establish deep learning framework (PyTorch), hardware requirements (Kaggle GPU), and project milestone schedule.</p>
+                <div class="method-meta">
+                    <div class="method-meta-row">
+                        <strong>Activities</strong>
+                        Selecting U-Net architecture, environment configuration, web stack selection (Flask/Bootstrap).
+                    </div>
+                    <div class="method-meta-row">
+                        <strong>Deliverables</strong>
+                        Capstone project plan, resource allocation map, risk assessment report.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 method-phase" style="animation-delay:0.15s">
+            <div class="method-phase-card" style="--phase-accent:#0D4A6E">
+                <div class="method-phase-head">
+                    <div class="method-phase-icon"><i class="fa-solid fa-pen-ruler"></i></div>
+                    <div>
+                        <span class="method-phase-badge">Phase 3</span>
+                        <h3>System Design</h3>
+                    </div>
+                </div>
+                <p class="obj"><strong>Objective:</strong> Design neural network layers, Flask backend REST routes, and responsive healthcare UI components.</p>
+                <div class="method-meta">
+                    <div class="method-meta-row">
+                        <strong>Activities</strong>
+                        U-Net encoder-decoder schema design, API endpoint contract definition, UI wireframing.
+                    </div>
+                    <div class="method-meta-row">
+                        <strong>Deliverables</strong>
+                        System architecture diagram, database/schema specs, UI mockup layouts.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 method-phase" style="animation-delay:0.2s">
+            <div class="method-phase-card" style="--phase-accent:#00A896">
+                <div class="method-phase-head">
+                    <div class="method-phase-icon"><i class="fa-solid fa-code"></i></div>
+                    <div>
+                        <span class="method-phase-badge">Phase 4</span>
+                        <h3>Implementation</h3>
+                    </div>
+                </div>
+                <p class="obj"><strong>Objective:</strong> Train U-Net model in Kaggle and code Flask web app backend and JavaScript dropzone UI.</p>
+                <div class="method-meta">
+                    <div class="method-meta-row">
+                        <strong>Activities</strong>
+                        PyTorch training loop execution, weights saving (<code class="text-teal">best_unet_pet.pth</code>), Flask route integration.
+                    </div>
+                    <div class="method-meta-row">
+                        <strong>Deliverables</strong>
+                        Trained model checkpoint, complete web codebase, image processing utils.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 method-phase" style="animation-delay:0.25s">
+            <div class="method-phase-card" style="--phase-accent:#F59E0B">
+                <div class="method-phase-head">
+                    <div class="method-phase-icon"><i class="fa-solid fa-vial"></i></div>
+                    <div>
+                        <span class="method-phase-badge">Phase 5</span>
+                        <h3>Testing</h3>
+                    </div>
+                </div>
+                <p class="obj"><strong>Objective:</strong> Validate image enhancement quality on unseen test dataset and verify web upload UI responsiveness.</p>
+                <div class="method-meta">
+                    <div class="method-meta-row">
+                        <strong>Activities</strong>
+                        Quantitative PSNR/SSIM evaluation, DICOM parsing sanity checks, cross-browser UI testing.
+                    </div>
+                    <div class="method-meta-row">
+                        <strong>Deliverables</strong>
+                        Final test results report, bug log, metric verification curves.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 method-phase" style="animation-delay:0.3s">
+            <div class="method-phase-card" style="--phase-accent:#10B981">
+                <div class="method-phase-head">
+                    <div class="method-phase-icon"><i class="fa-solid fa-rocket"></i></div>
+                    <div>
+                        <span class="method-phase-badge">Phase 6</span>
+                        <h3>Deployment</h3>
+                    </div>
+                </div>
+                <p class="obj"><strong>Objective:</strong> Deploy production-ready web app to Render / Vercel cloud platform for live demonstration.</p>
+                <div class="method-meta">
+                    <div class="method-meta-row">
+                        <strong>Activities</strong>
+                        Gunicorn WSGI server setup, environment variables configuration, Git repository push.
+                    </div>
+                    <div class="method-meta-row">
+                        <strong>Deliverables</strong>
+                        Live web application URL, GitHub repository, deployment guide.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 method-phase" style="animation-delay:0.35s">
+            <div class="method-phase-card" style="--phase-accent:#1E293B">
+                <div class="method-phase-head">
+                    <div class="method-phase-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                    <div>
+                        <span class="method-phase-badge">Phase 7</span>
+                        <h3>Maintenance</h3>
+                    </div>
+                </div>
+                <p class="obj"><strong>Objective:</strong> Monitor web app latency, handle new DICOM metadata tags, and update security dependencies.</p>
+                <div class="method-meta">
+                    <div class="method-meta-row">
+                        <strong>Activities</strong>
+                        Performance monitoring, error logging inspection, model retraining planning for 3D volumes.
+                    </div>
+                    <div class="method-meta-row">
+                        <strong>Deliverables</strong>
+                        Maintenance documentation, system update logs.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="method-why mt-4">
+        <h2><i class="fa-solid fa-circle-check text-success me-2"></i>Why The Waterfall Model Was Selected</h2>
+        <p>Chosen for this medical image enhancement project because of fixed clinical requirements, documentation needs, and sequential model → web validation.</p>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="why-card">
+                    <div class="why-num">1</div>
+                    <h3>Fixed Requirements Before Development</h3>
+                    <p>U-Net input/output tensor dimensions and loss functions were finalized during research before web coding began.</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="why-card">
+                    <div class="why-num">2</div>
+                    <h3>Medical Software Documentation Needs</h3>
+                    <p>Medical AI applications demand strict traceability across dataset split, training, and web inference.</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="why-card">
+                    <div class="why-num">3</div>
+                    <h3>Sequential Completion &amp; Validation</h3>
+                    <p>Deep learning model training (Phase 4) must be complete and validated before backend web API integration.</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="why-card">
+                    <div class="why-num">4</div>
+                    <h3>Academic Capstone Management</h3>
+                    <p>Clear milestone deliverables and phase gates ideal for academic evaluation and progress monitoring.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

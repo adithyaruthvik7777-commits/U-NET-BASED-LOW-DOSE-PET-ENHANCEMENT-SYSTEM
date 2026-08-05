@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}System Architecture | Low-Dose PET System{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+    <div class="container">
+        <div class="page-kicker"><i class="fa-solid fa-sitemap"></i> System Design</div>
+        <h1>System Architecture</h1>
+        <p>Data flow diagram and architectural components of the web application.</p>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <!-- SYSTEM ARCHITECTURE FLOWCHART -->
+    <div class="card-custom mb-5">
+        <h3 class="fw-bold text-center text-primary-dark mb-4">System Architecture Data Flow</h3>
+        
+        <div class="row align-items-center justify-content-center g-3 text-center">
+            <!-- Node 1 -->
+            <div class="col-md-3">
+                <div class="p-3 bg-light border border-2 border-primary rounded-4">
+                    <i class="fa-solid fa-laptop-medical text-primary fs-2 mb-2 d-block"></i>
+                    <h6 class="fw-bold m-0">User Browser</h6>
+                    <small class="text-muted">Client Desktop / Mobile</small>
+                </div>
+            </div>
+            
+            <div class="col-12 col-md-auto text-slate-400 fs-4 my-2"><i class="fa-solid fa-arrow-down d-md-none"></i><i class="fa-solid fa-arrow-right d-none d-md-inline"></i></div>
+
+            <!-- Node 2 -->
+            <div class="col-md-3">
+                <div class="p-3 bg-light border border-2 border-teal rounded-4">
+                    <i class="fa-code text-teal fs-2 mb-2 d-block"></i>
+                    <h6 class="fw-bold m-0">Frontend UI Layer</h6>
+                    <small class="text-muted">HTML5 / CSS3 / JavaScript</small>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-auto text-slate-400 fs-4 my-2"><i class="fa-solid fa-arrow-down d-md-none"></i><i class="fa-solid fa-arrow-right d-none d-md-inline"></i></div>
+
+            <!-- Node 3 -->
+            <div class="col-md-3">
+                <div class="p-3 bg-light border border-2 border-warning rounded-4">
+                    <i class="fa-brands fa-python text-warning fs-2 mb-2 d-block"></i>
+                    <h6 class="fw-bold m-0">Flask Backend</h6>
+                    <small class="text-muted">App Server & REST Endpoint</small>
+                </div>
+            </div>
+
+            <!-- Row Break -->
+            <div class="w-100 d-none d-md-block my-3"></div>
+
+            <!-- Node 4 -->
+            <div class="col-md-3">
+                <div class="p-3 bg-light border border-2 border-info rounded-4">
+                    <i class="fa-solid fa-gears text-info fs-2 mb-2 d-block"></i>
+                    <h6 class="fw-bold m-0">Image Preprocessing</h6>
+                    <small class="text-muted">OpenCV / PyDICOM / NumPy</small>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-auto text-slate-400 fs-4 my-2"><i class="fa-solid fa-arrow-down d-md-none"></i><i class="fa-solid fa-arrow-right d-none d-md-inline"></i></div>
+
+            <!-- Node 5 -->
+            <div class="col-md-3">
+                <div class="p-3 bg-light border border-3 border-teal rounded-4 shadow-sm">
+                    <i class="fa-solid fa-brain text-teal fs-2 mb-2 d-block"></i>
+                    <h6 class="fw-bold m-0 text-teal">Trained U-Net Model</h6>
+                    <small class="text-muted">PyTorch Deep Learning Engine</small>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-auto text-slate-400 fs-4 my-2"><i class="fa-solid fa-arrow-down d-md-none"></i><i class="fa-solid fa-arrow-right d-none d-md-inline"></i></div>
+
+            <!-- Node 6 -->
+            <div class="col-md-3">
+                <div class="p-3 bg-light border border-2 border-secondary rounded-4">
+                    <i class="fa-solid fa-sliders text-secondary fs-2 mb-2 d-block"></i>
+                    <h6 class="fw-bold m-0">Image Postprocessing</h6>
+                    <small class="text-muted">Intensity Clip & Colormap</small>
+                </div>
+            </div>
+
+            <!-- Row Break -->
+            <div class="w-100 d-none d-md-block my-3"></div>
+
+            <!-- Node 7 & 8 -->
+            <div class="col-md-5">
+                <div class="p-3 bg-light border border-2 border-success rounded-4 text-center">
+                    <i class="fa-solid fa-circle-check text-success fs-2 mb-2 d-block"></i>
+                    <h6 class="fw-bold m-0 text-success">Enhanced Image Display & Download</h6>
+                    <small class="text-muted">Side-by-Side Comparison & High-Res Export</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ARCHITECTURAL COMPONENT DESCRIPTIONS -->
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card-custom h-100">
+                <h5 class="fw-bold text-primary-dark mb-3"><i class="fa-solid fa-server text-teal me-2"></i> Client-Server Decoupling</h5>
+                <p class="text-muted small">
+                    The web application uses asynchronous AJAX (Fetch API) requests between the client browser and the Flask REST server. This prevents full-page reloads and provides a smooth progress indicator while PyTorch executes neural network inference.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card-custom h-100">
+                <h5 class="fw-bold text-primary-dark mb-3"><i class="fa-solid fa-shield-halved text-teal me-2"></i> Security & Memory Management</h5>
+                <p class="text-muted small">
+                    Uploaded DICOM images are sanitized using <code class="text-primary">secure_filename</code> and assigned unique UUIDs. Temporary uploaded image files are processed statelessly in isolated directories to guarantee patient data privacy and efficient memory disposal.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

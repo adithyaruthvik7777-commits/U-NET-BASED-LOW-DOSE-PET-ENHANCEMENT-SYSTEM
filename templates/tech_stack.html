@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Technology Stack | Low-Dose PET System{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+    <div class="container">
+        <div class="page-kicker"><i class="fa-solid fa-layer-group"></i> Full Stack</div>
+        <h1>Technology Stack</h1>
+        <p>Modern technologies powering the frontend, backend, deep learning model, and deployment pipeline.</p>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row g-4">
+        <!-- FRONTEND -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card-custom h-100 border-top border-4 border-primary">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <i class="fa-brands fa-html5 text-danger fs-1"></i>
+                    <div>
+                        <h4 class="fw-bold m-0 text-primary-dark">Frontend UI</h4>
+                        <small class="text-muted">User Interface Layer</small>
+                    </div>
+                </div>
+                <ul class="list-group list-group-flush small">
+                    <li class="list-group-item bg-transparent"><strong>HTML5:</strong> Semantic web structure</li>
+                    <li class="list-group-item bg-transparent"><strong>CSS3:</strong> Custom healthcare styling, glassmorphism</li>
+                    <li class="list-group-item bg-transparent"><strong>JavaScript (ES6+):</strong> Drag & drop dropzone, AJAX requests, comparison slider</li>
+                    <li class="list-group-item bg-transparent"><strong>Bootstrap 5:</strong> Responsive grid system & UI cards</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- BACKEND -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card-custom h-100 border-top border-4 border-teal">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <i class="fa-brands fa-python text-primary fs-1"></i>
+                    <div>
+                        <h4 class="fw-bold m-0 text-primary-dark">Flask Backend</h4>
+                        <small class="text-muted">Python Web Framework</small>
+                    </div>
+                </div>
+                <ul class="list-group list-group-flush small">
+                    <li class="list-group-item bg-transparent"><strong>Flask:</strong> Micro-web framework handling routing & API requests</li>
+                    <li class="list-group-item bg-transparent"><strong>Werkzeug:</strong> Secure filename upload handling</li>
+                    <li class="list-group-item bg-transparent"><strong>REST API:</strong> Endpoint <code class="text-teal">/api/enhance</code> returning JSON responses</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- DEEP LEARNING -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card-custom h-100 border-top border-4 border-warning">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <i class="fa-solid fa-brain text-warning fs-1"></i>
+                    <div>
+                        <h4 class="fw-bold m-0 text-primary-dark">Deep Learning</h4>
+                        <small class="text-muted">AI & Neural Networks</small>
+                    </div>
+                </div>
+                <ul class="list-group list-group-flush small">
+                    <li class="list-group-item bg-transparent"><strong>PyTorch:</strong> Tensor computation & model inference engine</li>
+                    <li class="list-group-item bg-transparent"><strong>U-Net Architecture:</strong> Encoder-decoder with skip connections</li>
+                    <li class="list-group-item bg-transparent"><strong>Kaggle GPU:</strong> High-performance model training platform</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- IMAGE PROCESSING -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card-custom h-100 border-top border-4 border-success">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <i class="fa-solid fa-cube text-success fs-1"></i>
+                    <div>
+                        <h4 class="fw-bold m-0 text-primary-dark">Image Processing</h4>
+                        <small class="text-muted">DICOM & Tensor Prep</small>
+                    </div>
+                </div>
+                <ul class="list-group list-group-flush small">
+                    <li class="list-group-item bg-transparent"><strong>OpenCV:</strong> Heatmap colormapping & image resizing</li>
+                    <li class="list-group-item bg-transparent"><strong>NumPy:</strong> Fast multi-dimensional array manipulation</li>
+                    <li class="list-group-item bg-transparent"><strong>Pillow (PIL):</strong> Image format conversions</li>
+                    <li class="list-group-item bg-transparent"><strong>PyDICOM:</strong> Parsing medical DICOM headers & pixel arrays</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- DEPLOYMENT -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card-custom h-100 border-top border-4 border-info">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <i class="fa-solid fa-cloud-arrow-up text-info fs-1"></i>
+                    <div>
+                        <h4 class="fw-bold m-0 text-primary-dark">Deployment</h4>
+                        <small class="text-muted">Cloud Hosting Platform</small>
+                    </div>
+                </div>
+                <ul class="list-group list-group-flush small">
+                    <li class="list-group-item bg-transparent"><strong>Render / Vercel:</strong> Production cloud web server deployment</li>
+                    <li class="list-group-item bg-transparent"><strong>Gunicorn:</strong> WSGI HTTP server for production Python web apps</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- VERSION CONTROL -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card-custom h-100 border-top border-4 border-secondary">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <i class="fa-brands fa-github text-dark fs-1"></i>
+                    <div>
+                        <h4 class="fw-bold m-0 text-primary-dark">Version Control</h4>
+                        <small class="text-muted">Repository & Code Management</small>
+                    </div>
+                </div>
+                <ul class="list-group list-group-flush small">
+                    <li class="list-group-item bg-transparent"><strong>Git:</strong> Local code commit tracking & branching</li>
+                    <li class="list-group-item bg-transparent"><strong>GitHub:</strong> Remote repository hosting & CI/CD deployment trigger</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

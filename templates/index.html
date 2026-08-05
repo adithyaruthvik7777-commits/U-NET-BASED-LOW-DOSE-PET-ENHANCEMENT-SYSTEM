@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block title %}Home | Low-Dose PET Image Enhancement System using U-Net{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-7">
+                <div class="hero-badge">
+                    <i class="fa-solid fa-microchip"></i> Deep Learning Medical Imaging
+                </div>
+                <h1 class="hero-title">
+                    Low-Dose PET Enhancement with U-Net
+                </h1>
+                <p class="hero-subtitle">
+                    Transform low-radiation Positron Emission Tomography scans into diagnostic high-dose quality images in real time using a trained PyTorch U-Net pipeline.
+                </p>
+                <div class="d-flex flex-wrap gap-3 hero-actions">
+                    <a href="{{ url_for('enhance') }}" class="btn btn-hero-primary">
+                        <i class="fa-solid fa-cloud-arrow-up me-2"></i> Upload Low-Dose Image
+                    </a>
+                    <a href="{{ url_for('how_it_works') }}" class="btn btn-hero-ghost">
+                        <i class="fa-solid fa-circle-play me-2"></i> View Workflow
+                    </a>
+                </div>
+                <div class="hero-stats-row">
+                    <div class="hero-stat-chip">
+                        <strong>{{ dataset_stats.paired_images if dataset_stats else 9006 }}</strong>
+                        <span>Paired Images</span>
+                    </div>
+                    <div class="hero-stat-chip">
+                        <strong>{{ dataset_stats.get('mean_ssim_pct', 93.2) if dataset_stats else 93.2 }}%</strong>
+                        <span>Mean SSIM</span>
+                    </div>
+                    <div class="hero-stat-chip">
+                        <strong>1:50</strong>
+                        <span>Dose Ratio</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="hero-card-preview">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="badge bg-teal-subtle text-teal fw-bold">U-Net Model Ready</span>
+                        <span class="small text-slate-300"><i class="fa-solid fa-bolt text-warning me-1"></i> PyTorch Inference</span>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <div class="hero-preview-panel">
+                                <small class="d-block text-slate-400 mb-1 px-1">Low-Dose Input</small>
+                                <div class="placeholder-icon" style="background: linear-gradient(145deg,#1a2740,#0f172a);">
+                                    <i class="fa-solid fa-braille"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="hero-preview-panel" style="border-color: rgba(0,168,150,0.45);">
+                                <small class="d-block text-teal mb-1 px-1">Enhanced Output</small>
+                                <div class="placeholder-icon" style="background: linear-gradient(145deg,#0d3d42,#062428); color: #5EEAD4;">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-2 rounded text-start small text-slate-200" style="background: rgba(255,255,255,0.08);">
+                        <i class="fa-solid fa-shield-halved text-teal me-1"></i>
+                        Reconstructs full-dose quality from 1/50 radiotracer dose while preserving metabolic structure.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container py-4">
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto">
+                <span class="section-eyebrow">Clinical Challenge</span>
+                <h2 class="section-title">Project Overview</h2>
+                <p class="section-subtitle">
+                    PET scanning delivers essential metabolic diagnostics — but full-dose protocols expose patients to significant ionizing radiation. This system closes that gap with deep learning.
+                </p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card-custom h-100 mb-0">
+                    <div class="card-icon-wrapper">
+                        <i class="fa-solid fa-biohazard"></i>
+                    </div>
+                    <h4>Radiation Reduction</h4>
+                    <p class="text-muted small mb-0">
+                        Low-dose PET protocols cut radiotracer activity, lowering risk for pediatric and recurring-scan patients without abandoning diagnostic PET.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-custom h-100 mb-0">
+                    <div class="card-icon-wrapper">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <h4>U-Net Deep Learning</h4>
+                    <p class="text-muted small mb-0">
+                        Encoder–decoder architecture with skip connections, trained on paired low-dose / full-dose slices to restore metabolic detail.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-custom h-100 mb-0">
+                    <div class="card-icon-wrapper">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    <h4>Quantitative Quality</h4>
+                    <p class="text-muted small mb-0">
+                        High PSNR and SSIM restoration (~93% mean SSIM) without introducing phantom metabolic artifacts.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5" style="background: linear-gradient(180deg, #fff 0%, #F0F5FA 100%); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <span class="section-eyebrow">Capability</span>
+            <h2 class="section-title">Key System Features</h2>
+            <p class="section-subtitle">Built for medical imaging research demos and clinical workflow walkthroughs</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-tile">
+                    <i class="fa-solid fa-file-medical"></i>
+                    <h5>DICOM &amp; Image Support</h5>
+                    <p class="text-muted small m-0">DICOM (.dcm, .ima), NumPy (.npy), PNG, and JPG.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-tile">
+                    <i class="fa-solid fa-sliders"></i>
+                    <h5>Side-by-Side Compare</h5>
+                    <p class="text-muted small m-0">Interactive split slider: low-dose vs U-Net output.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-tile">
+                    <i class="fa-solid fa-gauge-high"></i>
+                    <h5>Real-time Metrics</h5>
+                    <p class="text-muted small m-0">Instant PSNR, SSIM, and noise reduction estimates.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-tile">
+                    <i class="fa-solid fa-download"></i>
+                    <h5>High-Res Export</h5>
+                    <p class="text-muted small m-0">One-click download of the enhanced PET result.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container py-4">
+        <div class="cta-banner text-center mx-auto" style="max-width: 900px;">
+            <h2>Ready to Enhance a Low-Dose PET Image?</h2>
+            <p class="text-slate-200 mb-4 fs-5 mx-auto" style="max-width: 32rem;">
+                Upload a low-dose PET slice and watch the trained U-Net restore clarity in seconds.
+            </p>
+            <a href="{{ url_for('enhance') }}" class="btn btn-light btn-lg">
+                <i class="fa-solid fa-wand-magic-sparkles me-2"></i> Launch Enhancement Tool
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -293,21 +293,65 @@ def display_window(img_arr_01, p_low=None, p_high=None, mode="autoscale"):
     return np.clip((img - lo) / (hi - lo), 0.0, 1.0)
 
 
+def normalize_colormap(name):
+    """Map UI / alias names onto supported colormap keys."""
+    key = (name or "gray").strip().lower().replace("-", "_").replace(" ", "_")
+    aliases = {
+        "grey": "gray",
+        "grayscale": "gray",
+        "grey_scale": "gray",
+        "jet": "pet_heatmap",
+        "heatmap": "pet_heatmap",
+        "pet": "pet_heatmap",
+        "petheatmap": "pet_heatmap",
+        "thermal": "hot",
+        "hot_iron": "hot",
+        "hotiron": "hot",
+        "iron": "hot",
+    }
+    return aliases.get(key, key)
+
+
+def _ensure_u8_gray(img_arr_01, enhance_display=True):
+    view = display_window(img_arr_01) if enhance_display else np.clip(img_arr_01, 0.0, 1.0)
+    img_8u = (np.clip(view, 0.0, 1.0) * 255.0).astype(np.uint8)
+    if img_8u.ndim == 3:
+        img_8u = cv2.cvtColor(img_8u, cv2.COLOR_RGB2GRAY)
+    return np.ascontiguousarray(img_8u)
+
+
+def _apply_cv_colormap(img_8u, cmap_id):
+    """Apply OpenCV colormap with a pure-NumPy fallback if OpenCV mapping fails."""
+    try:
+        colored_bgr = cv2.applyColorMap(img_8u, cmap_id)
+        return cv2.cvtColor(colored_bgr, cv2.COLOR_BGR2RGB)
+    except Exception:
+        # Simple fallback LUTs (approximate Jet / Hot)
+        x = img_8u.astype(np.float32) / 255.0
+        if cmap_id == cv2.COLORMAP_HOT:
+            r = np.clip(x * 3.0, 0, 1)
+            g = np.clip(x * 3.0 - 1.0, 0, 1)
+            b = np.clip(x * 3.0 - 2.0, 0, 1)
+        else:  # jet-ish
+            r = np.clip(1.5 - np.abs(4.0 * x - 3.0), 0, 1)
+            g = np.clip(1.5 - np.abs(4.0 * x - 2.0), 0, 1)
+            b = np.clip(1.5 - np.abs(4.0 * x - 1.0), 0, 1)
+        return (np.stack([r, g, b], axis=-1) * 255.0).astype(np.uint8)
+
+
 def apply_colormap_and_save(img_arr_01, save_path, colormap="gray", enhance_display=True):
     """
     Apply colormap (Grayscale, PET Heatmap, Hot Iron) and save PNG render.
     """
-    view = display_window(img_arr_01) if enhance_display else np.clip(img_arr_01, 0.0, 1.0)
-    img_8u = (view * 255.0).astype(np.uint8)
+    colormap = normalize_colormap(colormap)
+    img_8u = _ensure_u8_gray(img_arr_01, enhance_display=enhance_display)
 
     if colormap == "pet_heatmap":
-        colored_bgr = cv2.applyColorMap(img_8u, cv2.COLORMAP_JET)
-        rgb_img = cv2.cvtColor(colored_bgr, cv2.COLOR_BGR2RGB)
-        pil_img = Image.fromarray(rgb_img)
+        rgb_img = _apply_cv_colormap(img_8u, cv2.COLORMAP_JET)
+        pil_img = Image.fromarray(rgb_img, mode="RGB")
     elif colormap == "hot":
-        colored_bgr = cv2.applyColorMap(img_8u, cv2.COLORMAP_HOT)
-        rgb_img = cv2.cvtColor(colored_bgr, cv2.COLOR_BGR2RGB)
-        pil_img = Image.fromarray(rgb_img)
+        rgb_img = _apply_cv_colormap(img_8u, cv2.COLORMAP_HOT)
+        pil_img = Image.fromarray(rgb_img, mode="RGB")
     else:
         pil_img = Image.fromarray(img_8u, mode="L")
 
@@ -316,14 +360,12 @@ def apply_colormap_and_save(img_arr_01, save_path, colormap="gray", enhance_disp
 
 
 def _to_rgb_uint8(img_arr_01, colormap="gray"):
-    view = display_window(img_arr_01)
-    img_8u = (view * 255.0).astype(np.uint8)
+    colormap = normalize_colormap(colormap)
+    img_8u = _ensure_u8_gray(img_arr_01, enhance_display=True)
     if colormap == "pet_heatmap":
-        colored_bgr = cv2.applyColorMap(img_8u, cv2.COLORMAP_JET)
-        return cv2.cvtColor(colored_bgr, cv2.COLOR_BGR2RGB)
+        return _apply_cv_colormap(img_8u, cv2.COLORMAP_JET)
     if colormap == "hot":
-        colored_bgr = cv2.applyColorMap(img_8u, cv2.COLORMAP_HOT)
-        return cv2.cvtColor(colored_bgr, cv2.COLOR_BGR2RGB)
+        return _apply_cv_colormap(img_8u, cv2.COLORMAP_HOT)
     return np.stack([img_8u, img_8u, img_8u], axis=-1)
 
 

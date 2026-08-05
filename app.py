@@ -10,6 +10,7 @@ from utils.image_processing import (
     compute_histogram_bins,
     save_kaggle_style_comparison,
     DATASET_STATS,
+    normalize_colormap,
 )
 from utils.enhance_pipeline import enhance_pet
 from utils.metrics import calculate_metrics
@@ -170,7 +171,7 @@ def api_enhance():
 
     file_path = None
     full_dose_path = None
-    colormap = request.form.get("colormap", "gray").lower()
+    colormap = normalize_colormap(request.form.get("colormap", "gray"))
     fast = os.environ.get("FAST_INFERENCE", "0") == "1"
 
     sample_id = request.form.get("sample_id")

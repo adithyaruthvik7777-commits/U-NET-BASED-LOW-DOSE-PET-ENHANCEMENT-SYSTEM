@@ -102,11 +102,12 @@
                 <!-- CONTROLS & ENHANCE BUTTON -->
                 <div class="mt-4">
                     <label for="colormapSelect" class="form-label fw-bold text-dark small">Display Colormap Palette</label>
-                    <select id="colormapSelect" class="form-select border-secondary mb-3">
+                    <select id="colormapSelect" class="form-select border-secondary mb-1">
                         <option value="gray" selected>Grayscale (Radiology Standard)</option>
                         <option value="pet_heatmap">PET Heatmap (Jet Colormap)</option>
                         <option value="hot">Hot Iron (Thermal Intensity)</option>
                     </select>
+                    <p class="text-muted small mb-3">Pick a colormap, then click <strong>Enhance</strong> (or it auto-reruns after a change).</p>
 
                     <button id="enhanceBtn" class="btn btn-nav-enhance w-100 py-2.5 fs-6 shadow">
                         <i class="fa-solid fa-bolt me-2"></i> Enhance Low-Dose PET Image

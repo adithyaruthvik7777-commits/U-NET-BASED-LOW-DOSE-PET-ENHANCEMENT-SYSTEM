@@ -88,8 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Enhance Action Button Click
-    if (enhanceBtn) {
-        enhanceBtn.addEventListener("click", async () => {
+    async function runEnhancement() {
             if (!selectedFile && !selectedSampleId) {
                 alert("Please select a Siemens .IMA preset slice or upload a DICOM file first.");
                 return;
@@ -108,7 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (resultsSection) resultsSection.classList.add("d-none");
             if (errorAlert) errorAlert.classList.add("d-none");
 
-            enhanceBtn.disabled = true;
+            if (enhanceBtn) enhanceBtn.disabled = true;
 
             const formData = new FormData();
             if (selectedSampleId) {
@@ -125,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 updateProgressStep(2, "Min-Max Normalizing Voxel Intensities [0, 1]...");
                 await delay(350);
 
-                updateProgressStep(3, "Running U-Net on server (may take 20–60s on Render CPU)...");
+                updateProgressStep(3, "Running U-Net + applying " + colormap + " colormap...");
 
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 120000);
@@ -168,7 +167,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             } finally {
                 if (progressSection) progressSection.classList.add("d-none");
-                enhanceBtn.disabled = false;
+                if (enhanceBtn) enhanceBtn.disabled = false;
+            }
+    }
+
+    if (enhanceBtn) {
+        enhanceBtn.addEventListener("click", () => runEnhancement());
+    }
+
+    const colormapSelectEl = document.getElementById("colormapSelect");
+    if (colormapSelectEl) {
+        colormapSelectEl.addEventListener("change", () => {
+            // Re-run with new palette if a sample/file is already loaded
+            if (selectedFile || selectedSampleId) {
+                runEnhancement();
             }
         });
     }

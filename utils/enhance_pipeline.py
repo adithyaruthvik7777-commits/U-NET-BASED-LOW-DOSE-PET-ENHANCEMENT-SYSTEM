@@ -36,11 +36,13 @@ def _unflip_np(arr, mode):
 
 
 def predict_single(model, device, low_arr):
-    input_tensor, low_work, pad_hw = preprocess_for_unet(low_arr, target_size=None)
+    # On Render/CPU: force 256² to avoid OOM / empty gateway responses
+    target = (256, 256) if os.environ.get("FAST_INFERENCE", "0") == "1" else None
+    input_tensor, low_work, pad_hw = preprocess_for_unet(low_arr, target_size=target)
     orig_hw = (low_work.shape[0], low_work.shape[1])
     if HAS_TORCH and hasattr(input_tensor, "to"):
         input_tensor = input_tensor.to(device)
-        with torch.no_grad():
+        with torch.inference_mode():
             output_tensor = model(input_tensor)
     else:
         output_tensor = model(input_tensor)

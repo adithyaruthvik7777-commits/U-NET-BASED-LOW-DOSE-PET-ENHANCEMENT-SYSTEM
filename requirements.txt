@@ -1,7 +1,4 @@
 Flask>=2.2.0
-# CPU PyTorch for Render (smaller than default CUDA wheels)
---extra-index-url https://download.pytorch.org/whl/cpu
-torch==2.2.2+cpu
 numpy>=1.21.0
 opencv-python-headless>=4.5.0
 Pillow>=9.0.0
@@ -11,3 +8,6 @@ scikit-learn>=1.0.0
 gunicorn>=20.1.0
 werkzeug>=2.2.0
 scipy>=1.9.0
+# Install CPU torch from PyTorch index (set PYTHON_VERSION=3.11.9 on Render)
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.5.1+cpu

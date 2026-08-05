@@ -125,23 +125,30 @@ document.addEventListener("DOMContentLoaded", () => {
                 updateProgressStep(2, "Min-Max Normalizing Voxel Intensities [0, 1]...");
                 await delay(350);
 
-                updateProgressStep(3, "Executing PyTorch U-Net Deep Learning Forward Pass...");
+                updateProgressStep(3, "Running U-Net on server (may take 20–60s on Render CPU)...");
+
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 120000);
 
                 const response = await fetch("/api/enhance", {
                     method: "POST",
-                    body: formData
+                    body: formData,
+                    signal: controller.signal
                 });
+                clearTimeout(timeoutId);
 
                 const rawText = await response.text();
                 let data;
                 try {
                     data = JSON.parse(rawText);
                 } catch (_) {
-                    throw new Error(
-                        "Server returned an HTML error page instead of JSON " +
-                        "(often a Render timeout or out-of-memory during U-Net). " +
-                        "Status " + response.status + ". Try again in a minute, or check Render logs."
-                    );
+                    if (!rawText || response.status === 502 || response.status === 503) {
+                        throw new Error(
+                            "Server crashed or timed out during enhancement (common on Render free/low RAM). " +
+                            "Wait for redeploy, hard-refresh (Ctrl+F5), then try a preset sample. Status: " + response.status
+                        );
+                    }
+                    throw new Error("Invalid server response (status " + response.status + "). Check Render logs.");
                 }
 
                 if (!response.ok || !data.success) {

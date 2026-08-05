@@ -91,6 +91,14 @@ def resolve_sample_path(sample_id):
 # Load Model globally on startup
 unet_instance, current_device = load_model(MODEL_PATH)
 
+# Cap CPU threads — reduces peak RAM on Render
+try:
+    import torch as _torch
+    _torch.set_num_threads(1)
+    _torch.set_num_interop_threads(1)
+except Exception:
+    pass
+
 
 # ==========================================
 # PAGE ROUTES
@@ -157,27 +165,24 @@ def api_enhance():
     Handles image upload or sample selection, DICOM .IMA header parsing,
     PyTorch U-Net inference, postprocessing, histogram calculation, and JSON rendering.
     """
+    import gc
+    import cv2
+
     file_path = None
-    file_name = None
     full_dose_path = None
     colormap = request.form.get("colormap", "gray").lower()
+    fast = os.environ.get("FAST_INFERENCE", "0") == "1"
 
-    # Case A: Preset sample request
     sample_id = request.form.get("sample_id")
     if sample_id:
         file_path, full_dose_path = resolve_sample_path(sample_id)
-        file_name = os.path.basename(file_path) if file_path else None
-
-    # Case B: File upload
     elif "file" in request.files:
         file = request.files["file"]
         if file and file.filename != "" and allowed_file(file.filename):
             unique_id = uuid.uuid4().hex[:8]
             safe_name = secure_filename(file.filename) or "scan.ima"
-            temp_name = f"upload_{unique_id}_{safe_name}"
-            file_path = os.path.join(app.config["UPLOAD_FOLDER"], temp_name)
+            file_path = os.path.join(app.config["UPLOAD_FOLDER"], f"upload_{unique_id}_{safe_name}")
             file.save(file_path)
-            file_name = file.filename
 
     if not file_path or not os.path.exists(file_path):
         return jsonify({"success": False, "error": "No valid file uploaded or sample selected."}), 400
@@ -185,29 +190,23 @@ def api_enhance():
     try:
         unique_id = uuid.uuid4().hex[:8]
 
-        # 1. Load PET Image & Extract Siemens .IMA DICOM Tags
         low_arr, metadata = load_pet_image(file_path)
+        # Shrink early to cut RAM / time on Render
+        if fast or max(low_arr.shape[:2]) > 256:
+            low_arr = cv2.resize(low_arr, (256, 256), interpolation=cv2.INTER_AREA)
 
-        # Optional paired full-dose ground truth (from dataset export)
         full_arr = None
-        if full_dose_path and os.path.exists(full_dose_path):
+        if (not fast) and full_dose_path and os.path.exists(full_dose_path):
             full_arr, _ = load_pet_image(full_dose_path)
+            if full_arr.shape[:2] != low_arr.shape[:2]:
+                full_arr = cv2.resize(full_arr, (low_arr.shape[1], low_arr.shape[0]), interpolation=cv2.INTER_AREA)
 
-        # 2-4. Inference (FAST_INFERENCE=1 on Render: single U-Net pass)
-        enhanced_arr, low_work = enhance_pet(
-            unet_instance, current_device, low_arr
-        )
-        orig_hw = (low_work.shape[0], low_work.shape[1])
+        enhanced_arr, low_work = enhance_pet(unet_instance, current_device, low_arr)
+        gc.collect()
 
-        if full_arr is not None and full_arr.shape[:2] != orig_hw:
-            import cv2
-            full_arr = cv2.resize(full_arr, (orig_hw[1], orig_hw[0]), interpolation=cv2.INTER_AREA)
-
-        # 5. Save Preview Images + Kaggle-style comparison panel with dataset counts
         low_filename = f"low_{unique_id}.png"
         high_filename = f"high_{unique_id}.png"
         compare_filename = f"compare_{unique_id}.png"
-
         low_save_path = os.path.join(app.config["UPLOAD_FOLDER"], low_filename)
         high_save_path = os.path.join(app.config["UPLOAD_FOLDER"], high_filename)
         compare_save_path = os.path.join(app.config["UPLOAD_FOLDER"], compare_filename)
@@ -218,35 +217,50 @@ def api_enhance():
         full_filename = None
         full_dose_url = None
         if full_arr is not None:
-            import cv2
-            target_hw = low_work.shape[:2]
-            if full_arr.shape[:2] != target_hw:
-                full_arr = cv2.resize(full_arr, (target_hw[1], target_hw[0]), interpolation=cv2.INTER_AREA)
             full_filename = f"full_{unique_id}.png"
             full_save_path = os.path.join(app.config["UPLOAD_FOLDER"], full_filename)
             apply_colormap_and_save(full_arr, full_save_path, colormap=colormap)
             full_dose_url = url_for("static", filename=f"uploads/{full_filename}")
 
-        save_kaggle_style_comparison(
-            low_work,
-            enhanced_arr,
-            compare_save_path,
-            full_arr=full_arr,
-            colormap=colormap,
-            dataset_stats=DATASET_STATS,
-        )
+        if fast:
+            # Lightweight side-by-side (avoid heavy comparison renderer on Render)
+            import numpy as np
+            from PIL import Image
+            from utils.image_processing import _to_rgb_uint8
+            pair = np.concatenate(
+                [_to_rgb_uint8(low_work, colormap), _to_rgb_uint8(enhanced_arr, colormap)],
+                axis=1,
+            )
+            Image.fromarray(pair).save(compare_save_path)
+        else:
+            save_kaggle_style_comparison(
+                low_work,
+                enhanced_arr,
+                compare_save_path,
+                full_arr=full_arr,
+                colormap=colormap,
+                dataset_stats=DATASET_STATS,
+            )
 
-        # 6. Quality Metrics (vs full-dose GT when available, else low vs enhanced)
         if full_arr is not None:
             metrics = calculate_metrics(full_arr, enhanced_arr)
             metrics["reference"] = "full_dose_gt"
         else:
+            # Fast path: avoid heavy skimage if needed — calculate_metrics is OK at 256²
             metrics = calculate_metrics(low_work, enhanced_arr)
             metrics["reference"] = "low_vs_enhanced"
 
-        # 7. Intensity Histograms
-        hist_low = compute_histogram_bins(low_work)
-        hist_high = compute_histogram_bins(enhanced_arr)
+        if fast:
+            hist_low = {"labels": [], "values": []}
+            hist_high = {"labels": [], "values": []}
+            try:
+                hist_low = compute_histogram_bins(low_work)
+                hist_high = compute_histogram_bins(enhanced_arr)
+            except Exception:
+                pass
+        else:
+            hist_low = compute_histogram_bins(low_work)
+            hist_high = compute_histogram_bins(enhanced_arr)
 
         return jsonify({
             "success": True,
@@ -260,16 +274,15 @@ def api_enhance():
             "metrics": metrics,
             "metadata": metadata,
             "dataset_stats": DATASET_STATS,
-            "histograms": {
-                "low": hist_low,
-                "high": hist_high
-            }
+            "histograms": {"low": hist_low, "high": hist_high},
         })
 
     except Exception as e:
         import traceback
         traceback.print_exc()
         return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        gc.collect()
 
 
 @app.route("/download/<filename>")

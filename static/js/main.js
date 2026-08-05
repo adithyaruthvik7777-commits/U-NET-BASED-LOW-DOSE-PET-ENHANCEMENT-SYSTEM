@@ -132,7 +132,17 @@ document.addEventListener("DOMContentLoaded", () => {
                     body: formData
                 });
 
-                const data = await response.json();
+                const rawText = await response.text();
+                let data;
+                try {
+                    data = JSON.parse(rawText);
+                } catch (_) {
+                    throw new Error(
+                        "Server returned an HTML error page instead of JSON " +
+                        "(often a Render timeout or out-of-memory during U-Net). " +
+                        "Status " + response.status + ". Try again in a minute, or check Render logs."
+                    );
+                }
 
                 if (!response.ok || !data.success) {
                     throw new Error(data.error || "Image enhancement failed.");

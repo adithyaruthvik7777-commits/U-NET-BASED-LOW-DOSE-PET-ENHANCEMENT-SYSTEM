@@ -18,6 +18,10 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "pet_unet_secret_key_2026")
 app.config["MAX_CONTENT_LENGTH"] = 32 * 1024 * 1024  # 32 MB max upload limit
 
+# Faster single-pass inference on Render / low-RAM hosts (avoids HTML gateway timeouts)
+if os.environ.get("RENDER") or os.environ.get("FAST_INFERENCE", "").lower() in ("1", "true", "yes"):
+    os.environ["FAST_INFERENCE"] = "1"
+
 # Paths
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "uploads")
@@ -136,6 +140,17 @@ def architecture():
 # API ENDPOINTS
 # ==========================================
 
+@app.route("/api/health")
+def api_health():
+    """Lightweight health check for Render."""
+    return jsonify({
+        "ok": True,
+        "model_weights": os.path.exists(MODEL_PATH),
+        "device": str(current_device),
+        "fast_inference": os.environ.get("FAST_INFERENCE", "0") == "1",
+    })
+
+
 @app.route("/api/enhance", methods=["POST"])
 def api_enhance():
     """
@@ -178,9 +193,9 @@ def api_enhance():
         if full_dose_path and os.path.exists(full_dose_path):
             full_arr, _ = load_pet_image(full_dose_path)
 
-        # 2-4. High-quality inference: flip+scale TTA + residual blend (max SSIM/PSNR)
+        # 2-4. Inference (FAST_INFERENCE=1 on Render: single U-Net pass)
         enhanced_arr, low_work = enhance_pet(
-            unet_instance, current_device, low_arr, use_tta=True
+            unet_instance, current_device, low_arr
         )
         orig_hw = (low_work.shape[0], low_work.shape[1])
 

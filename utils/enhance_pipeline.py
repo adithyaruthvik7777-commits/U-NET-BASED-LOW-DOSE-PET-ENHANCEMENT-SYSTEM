@@ -5,6 +5,8 @@ High-quality PET enhancement inference:
 """
 from __future__ import annotations
 
+import os
+
 import numpy as np
 
 try:
@@ -123,15 +125,19 @@ def adaptive_refine(enhanced_arr, low_arr=None):
     return best.astype(np.float32)
 
 
-def enhance_pet(model, device, low_arr, use_tta=True, use_refine=False, residual_alpha=0.95):
+def enhance_pet(model, device, low_arr, use_tta=None, use_refine=False, residual_alpha=0.95, use_scales=None):
     """
-    Full enhancement pipeline for max SSIM/PSNR.
+    Enhancement pipeline. On Render/CPU hosts set FAST_INFERENCE=1 for a single
+    forward pass (avoids timeouts). Otherwise flip TTA; scale TTA only when not fast.
+    """
+    fast = os.environ.get("FAST_INFERENCE", "0") == "1"
+    if use_tta is None:
+        use_tta = not fast
+    if use_scales is None:
+        use_scales = not fast
 
-    Note: heavy NLM refine looked sharper but lowered SSIM vs full-dose on held-out
-    pairs (~91.6% vs ~92.4%), so it is off by default.
-    """
     if use_tta:
-        raw, low_work = predict_with_tta(model, device, low_arr, use_scales=True)
+        raw, low_work = predict_with_tta(model, device, low_arr, use_scales=use_scales)
     else:
         raw, low_work = predict_single(model, device, low_arr)
 

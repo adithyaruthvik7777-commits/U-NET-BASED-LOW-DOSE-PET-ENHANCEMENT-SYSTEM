@@ -294,33 +294,6 @@ document.addEventListener("DOMContentLoaded", () => {
         sliderContainer.addEventListener("touchmove", (e) => {
             if (isDragging && e.touches[0]) setSliderPos(e.touches[0].clientX);
         });
-
-        // Setup ROI Magnifier Lens
-        setupLoupeLens(sliderContainer, highUrl);
-    }
-
-    function setupLoupeLens(container, bgImageUrl) {
-        const loupe = document.getElementById("magnifierLoupe");
-        if (!loupe || !container) return;
-
-        loupe.style.backgroundImage = `url('${bgImageUrl}')`;
-        loupe.style.backgroundSize = `${container.clientWidth * 2.2}px ${container.clientHeight * 2.2}px`;
-
-        container.addEventListener("mouseenter", () => loupe.classList.remove("d-none"));
-        container.addEventListener("mouseleave", () => loupe.classList.add("d-none"));
-
-        container.addEventListener("mousemove", (e) => {
-            const rect = container.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-
-            loupe.style.left = `${x - 65}px`;
-            loupe.style.top = `${y - 65}px`;
-
-            const bgX = (x / rect.width) * 100;
-            const bgY = (y / rect.height) * 100;
-            loupe.style.backgroundPosition = `${bgX}% ${bgY}%`;
-        });
     }
 
     function populateDicomTagsModal(metadata) {

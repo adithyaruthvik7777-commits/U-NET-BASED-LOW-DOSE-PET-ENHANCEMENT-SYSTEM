@@ -212,23 +212,19 @@
                 <div class="mb-4">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="fw-bold text-dark small"><i class="fa-solid fa-sliders text-teal me-1"></i> Interactive Split Slider (Drag Left / Right)</span>
-                        <span class="small text-muted"><i class="fa-solid fa-magnifying-glass me-1"></i> Hover to activate ROI Magnifier Lens</span>
                     </div>
                     
                     <div class="comparison-container position-relative" id="comparisonSliderContainer">
                         <!-- Base High Dose Image -->
                         <img id="sliderHighBase" class="comparison-image" src="" alt="Enhanced High Dose PET">
-                        
+
                         <!-- Overlay Low Dose Image -->
                         <div class="comparison-overlay" id="sliderOverlayDiv">
                             <img id="sliderLowOverlay" class="comparison-image" src="" alt="Original Low Dose PET" style="width: 600px; max-width: none;">
                         </div>
 
-                        <!-- Split Handle -->
-                        <div class="slider-handle" id="sliderHandle"></div>                        </div>
-
-                        <!-- ROI Magnifier Lens -->
-                        <div id="magnifierLoupe" class="magnifier-loupe d-none"></div>
+                        <!-- Split Handle (line only, no circle / loupe) -->
+                        <div class="slider-handle" id="sliderHandle"></div>
                     </div>
 
                     <div class="d-flex justify-content-between text-muted small mt-2 px-2 fw-semibold">

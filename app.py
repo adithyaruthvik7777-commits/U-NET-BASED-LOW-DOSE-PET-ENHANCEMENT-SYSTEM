@@ -15,7 +15,7 @@ from utils.enhance_pipeline import enhance_pet
 from utils.metrics import calculate_metrics
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "pet_unet_secret_key_2026"
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "pet_unet_secret_key_2026")
 app.config["MAX_CONTENT_LENGTH"] = 32 * 1024 * 1024  # 32 MB max upload limit
 
 # Paths
@@ -272,6 +272,7 @@ def download_file(filename):
 
 
 if __name__ == "__main__":
-    print("Starting PET Image Enhancement System on http://127.0.0.1:5000 ...")
+    port = int(os.environ.get("PORT", 5000))
+    print(f"Starting PET Image Enhancement System on http://127.0.0.1:{port} ...")
     print("Dataset:", DATASET_STATS)
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=port, debug=os.environ.get("FLASK_DEBUG") == "1")

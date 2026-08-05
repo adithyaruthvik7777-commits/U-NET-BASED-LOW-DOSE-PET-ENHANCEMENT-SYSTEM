@@ -1,0 +1,13 @@
+# Render Blueprint (optional — you can also configure everything in the dashboard)
+services:
+  - type: web
+    name: pet-unet-enhancement
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 2 --timeout 120
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      - key: SECRET_KEY
+        generateValue: true

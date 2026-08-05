@@ -96,6 +96,41 @@
         </div>
     </div>
 
+    <!-- U-NET MODEL ARCHITECTURE TEASER -->
+    <div class="card-custom mb-4">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+                <h3 class="fw-bold text-primary-dark mb-2"><i class="fa-solid fa-diagram-project text-teal me-2"></i>U-Net Neural Architecture</h3>
+                <p class="text-muted small mb-3">
+                    The enhancement engine is a classic U-Net: encoder (1→64→128→256), bottleneck (512), decoder with skip concatenations, and a final 1×1 convolution to a single enhanced PET channel (~7.76M parameters).
+                </p>
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    <span class="badge bg-primary">Encoder</span>
+                    <span class="badge bg-warning text-dark">Bottleneck 512</span>
+                    <span class="badge bg-success">Decoder + Skips</span>
+                    <span class="badge bg-dark">Output 1 ch</span>
+                </div>
+                <a href="{{ url_for('model_info') }}" class="btn btn-nav-enhance">
+                    <i class="fa-solid fa-network-wired me-1"></i> View Full U-Net Diagram
+                </a>
+            </div>
+            <div class="col-lg-5">
+                <div class="p-3 rounded-4 border bg-light text-center">
+                    <div class="d-flex justify-content-center align-items-end gap-2 mb-2" style="height:110px">
+                        <div style="width:28px;height:90px;background:linear-gradient(#1A5FA0,#0A3663);border-radius:6px"></div>
+                        <div style="width:28px;height:70px;background:linear-gradient(#1A5FA0,#0A3663);border-radius:6px"></div>
+                        <div style="width:28px;height:50px;background:linear-gradient(#1A5FA0,#0A3663);border-radius:6px"></div>
+                        <div style="width:36px;height:36px;background:linear-gradient(#F59E0B,#D97706);border-radius:6px"></div>
+                        <div style="width:28px;height:50px;background:linear-gradient(#02C39A,#00A896);border-radius:6px"></div>
+                        <div style="width:28px;height:70px;background:linear-gradient(#02C39A,#00A896);border-radius:6px"></div>
+                        <div style="width:28px;height:90px;background:linear-gradient(#02C39A,#00A896);border-radius:6px"></div>
+                    </div>
+                    <small class="text-muted fw-semibold">U-shape · Encoder · Bridge · Decoder</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- ARCHITECTURAL COMPONENT DESCRIPTIONS -->
     <div class="row g-4">
         <div class="col-md-6">

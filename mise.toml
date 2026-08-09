@@ -1,0 +1,6 @@
+[settings]
+# Railway mise fails verifying GitHub attestations for some CPython builds
+python.github_attestations = false
+
+[tools]
+python = "3.11.9"

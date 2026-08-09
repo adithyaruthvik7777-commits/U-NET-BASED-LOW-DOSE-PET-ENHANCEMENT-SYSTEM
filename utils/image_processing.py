@@ -3,12 +3,7 @@ import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
-try:
-    import torch
-    HAS_TORCH = True
-except (ImportError, Exception):
-    HAS_TORCH = False
-    torch = None
+from utils.dataset_stats import DATASET_STATS
 
 try:
     import pydicom
@@ -16,23 +11,23 @@ try:
 except ImportError:
     HAS_PYDICOM = False
 
+# Lazy torch flag (do not import torch at module load — breaks Railway healthchecks)
+HAS_TORCH = None
+torch = None
 
-# Dataset counts from https://www.kaggle.com/datasets/skarthik112/paired-low-dose-dataset-1to50
-# Train/val/test split 70/15/15 (same as Cell1.py)
-DATASET_STATS = {
-    "low_dose_images": 9006,
-    "full_dose_images": 9006,
-    "paired_images": 9006,
-    "training_pairs": 6304,
-    "validation_pairs": 1351,
-    "testing_pairs": 1351,
-    "dataset_url": "https://www.kaggle.com/datasets/skarthik112/paired-low-dose-dataset-1to50",
-    "model_kernel": "adithyapanidepu/notebooka154a97ccb",
-    # Reported fidelity (not classification accuracy): mean SSIM on held-out pairs
-    "mean_ssim": 0.9320,
-    "mean_ssim_pct": 93.2,
-    "mean_psnr_db": 30.05,
-}
+
+def _ensure_torch():
+    global HAS_TORCH, torch
+    if HAS_TORCH is not None:
+        return HAS_TORCH
+    try:
+        import torch as _torch
+        torch = _torch
+        HAS_TORCH = True
+    except Exception:
+        torch = None
+        HAS_TORCH = False
+    return HAS_TORCH
 
 
 def parse_dicom_metadata(ds):
@@ -194,7 +189,7 @@ def preprocess_for_unet(img_arr, target_size=None):
     else:
         work, pad_hw = _pad_to_multiple(arr, multiple=8)
 
-    if HAS_TORCH:
+    if _ensure_torch():
         tensor = torch.as_tensor(work, dtype=torch.float32).unsqueeze(0).unsqueeze(0)
         return tensor, arr, pad_hw
     return work, arr, pad_hw
@@ -230,7 +225,7 @@ def postprocess_unet_output(
     Postprocess model output back to 2D numpy array [0, 1], matching Kaggle Cell 5
     (clip to [0, 1] — no destructive remapping that copies the low-dose look).
     """
-    if HAS_TORCH and isinstance(output_obj, torch.Tensor):
+    if _ensure_torch() and isinstance(output_obj, torch.Tensor):
         output_np = output_obj.squeeze().cpu().detach().numpy()
     else:
         output_np = np.asarray(output_obj, dtype=np.float32)

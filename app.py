@@ -4,13 +4,7 @@ import uuid
 from flask import Flask, render_template, request, jsonify, send_from_directory, url_for
 from werkzeug.utils import secure_filename
 
-from utils.image_processing import (
-    load_pet_image,
-    apply_colormap_and_save,
-    compute_histogram_bins,
-    DATASET_STATS,
-    normalize_colormap,
-)
+from utils.dataset_stats import DATASET_STATS
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "pet_unet_secret_key_2026")
@@ -235,7 +229,13 @@ def api_enhance():
     import cv2
     import numpy as np
     from PIL import Image
-    from utils.image_processing import _to_rgb_uint8
+    from utils.image_processing import (
+        load_pet_image,
+        apply_colormap_and_save,
+        compute_histogram_bins,
+        normalize_colormap,
+        _to_rgb_uint8,
+    )
 
     colormap = normalize_colormap(request.form.get("colormap", "gray"))
     fast = os.environ.get("FAST_INFERENCE", "0") == "1"

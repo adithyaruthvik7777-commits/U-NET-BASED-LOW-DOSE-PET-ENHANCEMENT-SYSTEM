@@ -4,24 +4,20 @@ import uuid
 from flask import Flask, render_template, request, jsonify, send_from_directory, url_for
 from werkzeug.utils import secure_filename
 
-from unet_model import load_model
 from utils.image_processing import (
     load_pet_image,
     apply_colormap_and_save,
     compute_histogram_bins,
-    save_kaggle_style_comparison,
     DATASET_STATS,
     normalize_colormap,
 )
-from utils.enhance_pipeline import enhance_pet
-from utils.metrics import calculate_metrics
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "pet_unet_secret_key_2026")
 app.config["MAX_CONTENT_LENGTH"] = 32 * 1024 * 1024  # 32 MB max upload limit
 
-# Faster single-pass inference on Render / low-RAM hosts
-if os.environ.get("RENDER") or os.environ.get("FAST_INFERENCE", "").lower() in ("1", "true", "yes"):
+# Faster single-pass inference on low-RAM hosts (Render / Railway)
+if os.environ.get("RENDER") or os.environ.get("RAILWAY_ENVIRONMENT") or os.environ.get("FAST_INFERENCE", "").lower() in ("1", "true", "yes"):
     os.environ["FAST_INFERENCE"] = "1"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -61,6 +57,7 @@ def get_model():
             _torch.set_num_interop_threads(1)
         except Exception:
             pass
+        from unet_model import load_model
         _unet_instance, _current_device = load_model(MODEL_PATH)
         return _unet_instance, _current_device
 
@@ -287,6 +284,7 @@ def api_enhance():
                     )
 
             model, device = get_model()
+            from utils.enhance_pipeline import enhance_pet
             with _infer_lock:
                 enhanced_arr, low_work = enhance_pet(model, device, low_arr)
             gc.collect()
@@ -324,7 +322,11 @@ def api_enhance():
         Image.fromarray(pair).save(compare_save_path)
 
         if full_arr is not None:
-            metrics = quick_metrics(full_arr, enhanced_arr) if fast or used_cache else calculate_metrics(full_arr, enhanced_arr)
+            if fast or used_cache:
+                metrics = quick_metrics(full_arr, enhanced_arr)
+            else:
+                from utils.metrics import calculate_metrics
+                metrics = calculate_metrics(full_arr, enhanced_arr)
             metrics["reference"] = "full_dose_gt"
         else:
             metrics = quick_metrics(low_work, enhanced_arr)
